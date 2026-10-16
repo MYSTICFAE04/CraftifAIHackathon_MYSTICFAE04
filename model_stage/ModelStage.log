@@ -1,0 +1,13 @@
+# PipeGen model stage — kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b
+# UTC                   step             outcome  fact
+2026-10-16T17:01:31Z  visualize        start    Checking every node against the TensorRT parser…
+2026-10-16T17:01:37Z  visualize        ok       321 nodes · 0 unresolved
+2026-10-16T17:01:44Z  compile          start    Compiling the model with TensorRT at FP32…
+2026-10-16T17:01:49Z  visualize        ok       321 nodes · 0 unresolved
+2026-10-16T17:01:56Z  choice           user     selected_artifact=baseline
+2026-10-16T17:01:56Z  choice           user     optimization_decision=
+2026-10-16T17:01:56Z  compile          warning  fp32 · 233 TRT layers · 47.6 MB
+2026-10-16T17:03:01Z  accuracy         start    Running the engine and the original ONNX over the same frames to see whether compiling changed the answers…
+2026-10-16T17:03:13Z  accuracy         ok       source=pseudo · 30 samples · mAP50=0.9954
+2026-10-16T17:03:25Z  benchmark        start    Benchmarking the compiled engine on this device…
+2026-10-16T17:03:32Z  engine           ok       5.468 ms mean

@@ -1,0 +1,296 @@
+{
+  "summary": {
+    "camera_id": "cam_crosswalk_01",
+    "total_frames_analyzed": 1183,
+    "sustained_threshold_frames": 3,
+    "cooldown_seconds": 3.0,
+    "total_safety_events_triggered": 5
+  },
+  "events": [
+    {
+      "event_id": "EVT_0001",
+      "camera_id": "cam_crosswalk_01",
+      "type": "PEDESTRIAN_VEHICLE_CONFLICT",
+      "severity": "CRITICAL",
+      "trigger_frame": 29,
+      "start_frame": 27,
+      "timestamp_pts_ns": 517183333,
+      "timestamp_sec": 0.517,
+      "conflict_zone": "crosswalk_conflict_zone",
+      "pedestrians_in_zone_count": 6,
+      "vehicles_in_zone_count": 1,
+      "pedestrian_tracks": [
+        11,
+        2,
+        6,
+        5,
+        8,
+        3
+      ],
+      "vehicle_tracks": [
+        17
+      ],
+      "sample_pedestrian": {
+        "track_id": 11,
+        "label": "person",
+        "confidence": 0.5774,
+        "anchor": [
+          1232.1,
+          569.5
+        ],
+        "bbox": {
+          "left": 1209.2,
+          "top": 426.7,
+          "width": 45.8,
+          "height": 142.8
+        }
+      },
+      "sample_vehicle": {
+        "track_id": 17,
+        "label": "car",
+        "confidence": 0.6057,
+        "anchor": [
+          1484.5,
+          532.3
+        ],
+        "bbox": {
+          "left": 1435.3,
+          "top": 444.9,
+          "width": 98.4,
+          "height": 87.4
+        }
+      }
+    },
+    {
+      "event_id": "EVT_0002",
+      "camera_id": "cam_crosswalk_01",
+      "type": "PEDESTRIAN_VEHICLE_CONFLICT",
+      "severity": "CRITICAL",
+      "trigger_frame": 311,
+      "start_frame": 309,
+      "timestamp_pts_ns": 5221883333,
+      "timestamp_sec": 5.222,
+      "conflict_zone": "crosswalk_conflict_zone",
+      "pedestrians_in_zone_count": 15,
+      "vehicles_in_zone_count": 1,
+      "pedestrian_tracks": [
+        29,
+        51,
+        8,
+        30,
+        57,
+        28,
+        2,
+        42,
+        27,
+        53,
+        66,
+        26,
+        50,
+        25,
+        75
+      ],
+      "vehicle_tracks": [
+        74
+      ],
+      "sample_pedestrian": {
+        "track_id": 26,
+        "label": "person",
+        "confidence": 0.555,
+        "anchor": [
+          618.0,
+          594.1
+        ],
+        "bbox": {
+          "left": 586.5,
+          "top": 436.9,
+          "width": 63.0,
+          "height": 157.2
+        }
+      },
+      "sample_vehicle": {
+        "track_id": 74,
+        "label": "car",
+        "confidence": 0.5356,
+        "anchor": [
+          1478.8,
+          531.8
+        ],
+        "bbox": {
+          "left": 1435.1,
+          "top": 445.7,
+          "width": 87.4,
+          "height": 86.1
+        }
+      }
+    },
+    {
+      "event_id": "EVT_0003",
+      "camera_id": "cam_crosswalk_01",
+      "type": "PEDESTRIAN_VEHICLE_CONFLICT",
+      "severity": "CRITICAL",
+      "trigger_frame": 492,
+      "start_frame": 490,
+      "timestamp_pts_ns": 8241566666,
+      "timestamp_sec": 8.242,
+      "conflict_zone": "crosswalk_conflict_zone",
+      "pedestrians_in_zone_count": 3,
+      "vehicles_in_zone_count": 1,
+      "pedestrian_tracks": [
+        87,
+        88,
+        85,
+        81,
+        25
+      ],
+      "vehicle_tracks": [
+        103
+      ],
+      "sample_pedestrian": {
+        "track_id": 81,
+        "label": "person",
+        "confidence": 0.666,
+        "anchor": [
+          485.8,
+          512.6
+        ],
+        "bbox": {
+          "left": 460.9,
+          "top": 444.5,
+          "width": 49.9,
+          "height": 68.1
+        }
+      },
+      "sample_vehicle": {
+        "track_id": 103,
+        "label": "car",
+        "confidence": 0.5035,
+        "anchor": [
+          1483.6,
+          533.2
+        ],
+        "bbox": {
+          "left": 1434.6,
+          "top": 445.0,
+          "width": 98.0,
+          "height": 88.2
+        }
+      }
+    },
+    {
+      "event_id": "EVT_0004",
+      "camera_id": "cam_crosswalk_01",
+      "type": "PEDESTRIAN_VEHICLE_CONFLICT",
+      "severity": "CRITICAL",
+      "trigger_frame": 729,
+      "start_frame": 727,
+      "timestamp_pts_ns": 12195516666,
+      "timestamp_sec": 12.196,
+      "conflict_zone": "crosswalk_conflict_zone",
+      "pedestrians_in_zone_count": 9,
+      "vehicles_in_zone_count": 1,
+      "pedestrian_tracks": [
+        138,
+        152,
+        25,
+        141,
+        81,
+        146,
+        147,
+        110,
+        145
+      ],
+      "vehicle_tracks": [
+        155
+      ],
+      "sample_pedestrian": {
+        "track_id": 147,
+        "label": "person",
+        "confidence": 0.7424,
+        "anchor": [
+          697.2,
+          578.8
+        ],
+        "bbox": {
+          "left": 664.7,
+          "top": 423.1,
+          "width": 65.1,
+          "height": 155.7
+        }
+      },
+      "sample_vehicle": {
+        "track_id": 155,
+        "label": "car",
+        "confidence": 0.504,
+        "anchor": [
+          1487.2,
+          533.9
+        ],
+        "bbox": {
+          "left": 1435.7,
+          "top": 444.8,
+          "width": 102.9,
+          "height": 89.1
+        }
+      }
+    },
+    {
+      "event_id": "EVT_0005",
+      "camera_id": "cam_crosswalk_01",
+      "type": "PEDESTRIAN_VEHICLE_CONFLICT",
+      "severity": "CRITICAL",
+      "trigger_frame": 1063,
+      "start_frame": 1061,
+      "timestamp_pts_ns": 17767750000,
+      "timestamp_sec": 17.768,
+      "conflict_zone": "crosswalk_conflict_zone",
+      "pedestrians_in_zone_count": 9,
+      "vehicles_in_zone_count": 2,
+      "pedestrian_tracks": [
+        217,
+        138,
+        206,
+        81,
+        110,
+        171,
+        196,
+        25,
+        202
+      ],
+      "vehicle_tracks": [
+        221,
+        220
+      ],
+      "sample_pedestrian": {
+        "track_id": 217,
+        "label": "person",
+        "confidence": 0.5419,
+        "anchor": [
+          1186.2,
+          570.0
+        ],
+        "bbox": {
+          "left": 1157.5,
+          "top": 430.5,
+          "width": 57.3,
+          "height": 139.5
+        }
+      },
+      "sample_vehicle": {
+        "track_id": 220,
+        "label": "car",
+        "confidence": 0.9406,
+        "anchor": [
+          316.6,
+          797.3
+        ],
+        "bbox": {
+          "left": 13.0,
+          "top": 394.3,
+          "width": 607.3,
+          "height": 403.0
+        }
+      }
+    }
+  ]
+}

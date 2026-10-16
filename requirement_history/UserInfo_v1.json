@@ -1,0 +1,430 @@
+{
+  "info": {
+    "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+    "pipeline_command": "python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4",
+    "project_name": "CrossGuard Edge Detection Pipeline",
+    "important_files": [],
+    "model_paths": [
+      "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+    ],
+    "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+    "architecture": {
+      "connections": [
+        {
+          "from": "n1",
+          "to": "n2"
+        },
+        {
+          "from": "n2",
+          "to": "n3"
+        },
+        {
+          "from": "n3",
+          "to": "n4"
+        },
+        {
+          "from": "n4",
+          "to": "n5"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "name": "Image input",
+          "short_description": "The application is described as a single-image sanity test; video-file processing is not established by the scan."
+        },
+        {
+          "id": "n2",
+          "name": "Image preprocessing",
+          "short_description": "Resize and letterbox to 640×640 with gray padding; convert to RGB float32 and scale values to [0,1]."
+        },
+        {
+          "id": "n3",
+          "name": "YOLO11s ONNX detector",
+          "short_description": "Produces raw box coordinates and 80 COCO class scores."
+        },
+        {
+          "id": "n4",
+          "name": "Detection decoder",
+          "short_description": "Transpose predictions, apply confidence filtering, and perform non-maximum suppression."
+        },
+        {
+          "id": "n5",
+          "name": "Vehicle selection and output",
+          "short_description": "The application identifies vehicle categories among detections; its description mentions a vehicle-count banner."
+        }
+      ]
+    },
+    "analysis_summaries": [
+      "The repository contains a YOLO11s ONNX object detector trained on COCO and an application.py script described as a single-image sanity test. The script preprocesses an image by letterboxing it to 640×640, converting to RGB, and scaling pixel values to [0,1]. The model outputs raw bounding boxes and 80 class scores, which the decoder transposes, confidence-filters, and suppresses with NMS. The application identifies vehicle categories, but the scan does not establish video-file support or a DeepStream/TensorRT engine pipeline, so it cannot be confirmed to serve the requested video task as specified.",
+      "[read_file]: application.py: \"\"\"Single-image sanity test for vehicle detection.\n\nNo GitHub repo or existing model file for this use case -- but unlike the\nrecent niche tasks (smoking, out-of-stock shelves, container fill level),\nvehicle detection is a standard, well-covered COCO category, so no custom\nfine-tune search was needed. Uses Ultralytics' own official YOLO11s\ncheckpoint (Ultralytics/YOLO11 on Hugging Face), COCO-pretrained (80\nclasses). Only ships .pt, so exported once with\n`YOLO(\"yolo11s.pt\").export(format=\"onnx\","
+    ],
+    "user_prompt": "Build a real-time edge vision pipeline for CrossGuard Edge, a pedestrian and vehicle monitoring system for road crossings. Detect people, cars, buses, trucks, and motorcycles using an available pretrained object-detection model. Support a local video file as the input and a USB camera if supported. Use NVIDIA DeepStream and compile at least one model to a TensorRT engine. Display live annotated detections and generate JSON metadata or event output if supported. Complete the full PipeGen workflow and provide the TensorRT speed report. Prioritize a working, validated pipeline on my NVIDIA RTX 4060 Linux laptop. Do not invent performance measurements.",
+    "pipeline_requirements": {
+      "extras": {
+        "compile": {
+          "engine": "TensorRT"
+        },
+        "device": "NVIDIA RTX 4060 Linux laptop",
+        "input_roles": {
+          "input1": "local video file"
+        },
+        "scene_step": {
+          "advice": [
+            {
+              "cue": "small_objects_wide_field",
+              "input": "input1",
+              "text": "At the camera: zoom in or move closer."
+            },
+            {
+              "cue": "small_objects_wide_field",
+              "input": "input1",
+              "text": "At the Model stage: a larger model input size helps small targets."
+            }
+          ],
+          "answered": {
+            "size__input1": "small"
+          },
+          "declined": [],
+          "inputs": {
+            "input1": {
+              "basis": {
+                "asks": [],
+                "kind": "video file",
+                "mtime": 1732487585.0,
+                "size": 24937205,
+                "tasks": [
+                  "object detection@input1"
+                ],
+                "url": "/home/neophiloz/Videos/CrossGuard/crosswalk.mp4"
+              },
+              "cues": [
+                "camera_fixed",
+                "small_objects_wide_field"
+              ],
+              "duty": {
+                "colour_cast": 1.0,
+                "dock_daylight": 0.0,
+                "haze": 0.0,
+                "low_light_after_dark": 0.167
+              },
+              "evidence": [
+                "The view holds still between frames, so the camera looks fixed."
+              ],
+              "footage": {
+                "chroma_offset": 0.059,
+                "clipped_fraction": 0.002,
+                "dark_fraction": 0.22,
+                "fps": 59.94,
+                "frames": 1183,
+                "height": 1080,
+                "mean_chroma": 9.9,
+                "motion": "fixed",
+                "noise": 0.17,
+                "p50": 0.378,
+                "rms_contrast": 0.247,
+                "rules": [],
+                "samples": 12,
+                "source": "video file",
+                "suggest": [],
+                "width": 1920
+              },
+              "said": {},
+              "skipped": false
+            }
+          },
+          "ledger": [],
+          "needs": [],
+          "privacy_source": [],
+          "rules": {
+            "camera_angled": [],
+            "camera_fixed": [
+              "input1"
+            ],
+            "camera_moving": [],
+            "camera_shakes": [],
+            "motion_unknown": [],
+            "no_cloud": [],
+            "privacy": [],
+            "small_objects": [
+              "input1"
+            ],
+            "store_events_only": []
+          },
+          "version": 1
+        }
+      },
+      "inputs": [
+        {
+          "data_kind": [
+            "frames"
+          ],
+          "fps": 59.94,
+          "id": "input1",
+          "resolution": "1920x1080",
+          "role": "local video file",
+          "type": "video file",
+          "url": "/home/neophiloz/Videos/CrossGuard/crosswalk.mp4"
+        }
+      ],
+      "needs_model": null,
+      "outputs": [
+        {
+          "id": "out1",
+          "type": "live_display"
+        },
+        {
+          "id": "out2",
+          "type": "metadata_file",
+          "url": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/output/metadata.json"
+        }
+      ],
+      "parallel": false,
+      "special_algorithms": [],
+      "target_classes": [],
+      "task_kind": null,
+      "tasks": [
+        {
+          "details": "Use an available pretrained object-detection model with NVIDIA DeepStream. Compile at least one model to a TensorRT engine. Validate the pipeline on the NVIDIA RTX 4060 Linux laptop; do not invent performance measurements. Minimum detection confidence: 0.5.",
+          "for_input": "input1",
+          "needs_model": true,
+          "target_classes": [
+            "people",
+            "cars",
+            "buses",
+            "trucks",
+            "motorcycles"
+          ],
+          "type": "object detection"
+        }
+      ],
+      "user_intent_summary": "Build a real-time DeepStream edge vision pipeline for CrossGuard Edge to detect people, cars, buses, trucks, and motorcycles from a local video file; display annotated detections and generate JSON metadata, compile at least one model to a TensorRT engine, and validate on an NVIDIA RTX 4060 Linux laptop without inventing performance measurements."
+    },
+    "repo_sources": [
+      {
+        "analysis_summaries": [
+          "The repository contains a YOLO11s ONNX object detector trained on COCO and an application.py script described as a single-image sanity test. The script preprocesses an image by letterboxing it to 640×640, converting to RGB, and scaling pixel values to [0,1]. The model outputs raw bounding boxes and 80 class scores, which the decoder transposes, confidence-filters, and suppresses with NMS. The application identifies vehicle categories, but the scan does not establish video-file support or a DeepStream/TensorRT engine pipeline, so it cannot be confirmed to serve the requested video task as specified.",
+          "[read_file]: application.py: \"\"\"Single-image sanity test for vehicle detection.\n\nNo GitHub repo or existing model file for this use case -- but unlike the\nrecent niche tasks (smoking, out-of-stock shelves, container fill level),\nvehicle detection is a standard, well-covered COCO category, so no custom\nfine-tune search was needed. Uses Ultralytics' own official YOLO11s\ncheckpoint (Ultralytics/YOLO11 on Hugging Face), COCO-pretrained (80\nclasses). Only ships .pt, so exported once with\n`YOLO(\"yolo11s.pt\").export(format=\"onnx\","
+        ],
+        "architecture": {
+          "connections": [
+            {
+              "from": "n1",
+              "to": "n2"
+            },
+            {
+              "from": "n2",
+              "to": "n3"
+            },
+            {
+              "from": "n3",
+              "to": "n4"
+            },
+            {
+              "from": "n4",
+              "to": "n5"
+            }
+          ],
+          "nodes": [
+            {
+              "id": "n1",
+              "name": "Image input",
+              "short_description": "The application is described as a single-image sanity test; video-file processing is not established by the scan."
+            },
+            {
+              "id": "n2",
+              "name": "Image preprocessing",
+              "short_description": "Resize and letterbox to 640×640 with gray padding; convert to RGB float32 and scale values to [0,1]."
+            },
+            {
+              "id": "n3",
+              "name": "YOLO11s ONNX detector",
+              "short_description": "Produces raw box coordinates and 80 COCO class scores."
+            },
+            {
+              "id": "n4",
+              "name": "Detection decoder",
+              "short_description": "Transpose predictions, apply confidence filtering, and perform non-maximum suppression."
+            },
+            {
+              "id": "n5",
+              "name": "Vehicle selection and output",
+              "short_description": "The application identifies vehicle categories among detections; its description mentions a vehicle-count banner."
+            }
+          ]
+        },
+        "class_coverage": {
+          "object detection@input1": {
+            "targets": [
+              {
+                "basis": "The ONNX metadata identifies the COCO-trained YOLO11 detector; application.py maps the COCO class name person and describes the bounding-box, confidence-filtering, and NMS decoder.",
+                "kind": "labels",
+                "labels": [
+                  "person"
+                ],
+                "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+                "output": "Raw bounding-box coordinates and class scores, decoded into detections with confidence filtering and NMS.",
+                "requested": "people",
+                "status": "supported"
+              },
+              {
+                "basis": "The ONNX metadata identifies the COCO-trained YOLO11 detector; application.py maps the COCO class name car and describes the bounding-box, confidence-filtering, and NMS decoder.",
+                "kind": "labels",
+                "labels": [
+                  "car"
+                ],
+                "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+                "output": "Raw bounding-box coordinates and class scores, decoded into detections with confidence filtering and NMS.",
+                "requested": "cars",
+                "status": "supported"
+              },
+              {
+                "basis": "The ONNX metadata identifies the COCO-trained YOLO11 detector; application.py maps the COCO class name bus and describes the bounding-box, confidence-filtering, and NMS decoder.",
+                "kind": "labels",
+                "labels": [
+                  "bus"
+                ],
+                "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+                "output": "Raw bounding-box coordinates and class scores, decoded into detections with confidence filtering and NMS.",
+                "requested": "buses",
+                "status": "supported"
+              },
+              {
+                "basis": "The ONNX metadata identifies the COCO-trained YOLO11 detector; application.py maps the COCO class name truck and describes the bounding-box, confidence-filtering, and NMS decoder.",
+                "kind": "labels",
+                "labels": [
+                  "truck"
+                ],
+                "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+                "output": "Raw bounding-box coordinates and class scores, decoded into detections with confidence filtering and NMS.",
+                "requested": "trucks",
+                "status": "supported"
+              },
+              {
+                "basis": "The ONNX metadata identifies the COCO-trained YOLO11 detector; application.py maps the COCO class name motorcycle and describes the bounding-box, confidence-filtering, and NMS decoder.",
+                "kind": "labels",
+                "labels": [
+                  "motorcycle"
+                ],
+                "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+                "output": "Raw bounding-box coordinates and class scores, decoded into detections with confidence filtering and NMS.",
+                "requested": "motorcycles",
+                "status": "supported"
+              }
+            ],
+            "version": 1
+          }
+        },
+        "class_coverage_signature": "6a10790a35f2f6a7137ba834",
+        "covers_tasks": [
+          "object detection@input1"
+        ],
+        "id": "src1",
+        "label_space": {
+          "count": 80,
+          "labels": [
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "backpack",
+            "umbrella",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "dining table",
+            "toilet",
+            "tv",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush"
+          ],
+          "source": "model/yolo11s.onnx metadata 'names'; application.py",
+          "version": 3
+        },
+        "model_paths": [
+          "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+        ],
+        "model_roles": [],
+        "pipeline_command": "python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4",
+        "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+        "scan_hash": "96bf00788222c74cc7b64b26340a8d6b2543ebdda93ca742a5d058b527d1d3f7",
+        "source": "benchmark",
+        "subfolder": "VehicleDetection",
+        "unused_models": []
+      }
+    ],
+    "class_waivers": []
+  },
+  "loop": {
+    "turn_id": 0,
+    "conversation_context": "",
+    "questionForUser": [],
+    "userConfirmed": true
+  }
+}

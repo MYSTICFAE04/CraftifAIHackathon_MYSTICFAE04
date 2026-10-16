@@ -1,0 +1,240 @@
+{
+  "blocks": [
+    {
+      "name": "Stem: initial downsampling",
+      "operations": "Conv(stride-2) + Conv(stride-2) with SiLU activations",
+      "precision": "FP32",
+      "time_ms": 0.282367,
+      "pct": 5.41,
+      "start_index": 0,
+      "end_index": 3,
+      "layer_count": 4
+    },
+    {
+      "name": "Backbone stage 1 (C2f, 160x160)",
+      "operations": "C2f: bottleneck with residual and concat fusion",
+      "precision": "FP32",
+      "time_ms": 0.273553,
+      "pct": 5.24,
+      "start_index": 4,
+      "end_index": 13,
+      "layer_count": 10
+    },
+    {
+      "name": "Backbone stage 2 downsample (160->80)",
+      "operations": "Conv(stride-2) + SiLU activation",
+      "precision": "FP32",
+      "time_ms": 0.313658,
+      "pct": 6.01,
+      "start_index": 14,
+      "end_index": 15,
+      "layer_count": 2
+    },
+    {
+      "name": "Backbone stage 2 (C2f, 80x80)",
+      "operations": "C2f: bottleneck with residual and concat fusion",
+      "precision": "FP32",
+      "time_ms": 0.191996,
+      "pct": 3.68,
+      "start_index": 16,
+      "end_index": 25,
+      "layer_count": 10
+    },
+    {
+      "name": "Backbone stage 3 downsample (80->40)",
+      "operations": "Conv(stride-2) + SiLU activation",
+      "precision": "FP32",
+      "time_ms": 0.372199,
+      "pct": 7.14,
+      "start_index": 26,
+      "end_index": 27,
+      "layer_count": 2
+    },
+    {
+      "name": "Backbone stage 3 (deep C2f, 40x40)",
+      "operations": "Deep C2f: multi-bottleneck CSP with residual paths",
+      "precision": "FP32",
+      "time_ms": 0.232534,
+      "pct": 4.46,
+      "start_index": 28,
+      "end_index": 46,
+      "layer_count": 19
+    },
+    {
+      "name": "Backbone stage 4 downsample (40->20)",
+      "operations": "Conv(stride-2) + SiLU activation",
+      "precision": "FP32",
+      "time_ms": 0.266966,
+      "pct": 5.12,
+      "start_index": 47,
+      "end_index": 48,
+      "layer_count": 2
+    },
+    {
+      "name": "Backbone stage 4 (deep C2f, 20x20)",
+      "operations": "Deep C2f: multi-bottleneck CSP with residual paths",
+      "precision": "FP32",
+      "time_ms": 0.304249,
+      "pct": 5.83,
+      "start_index": 49,
+      "end_index": 68,
+      "layer_count": 20
+    },
+    {
+      "name": "SPPF spatial pyramid on 20x20",
+      "operations": "Conv + 3x maxpool pyramid + Conv fusion",
+      "precision": "FP32",
+      "time_ms": 0.145691,
+      "pct": 2.79,
+      "start_index": 69,
+      "end_index": 78,
+      "layer_count": 10
+    },
+    {
+      "name": "Transformer encoder block at 20x20",
+      "operations": "Conv qkv + MHSA GEMM + FFN + residuals",
+      "precision": "FP32",
+      "time_ms": 0.271566,
+      "pct": 5.21,
+      "start_index": 79,
+      "end_index": 101,
+      "layer_count": 23
+    },
+    {
+      "name": "Neck upsample 20->40 and fuse with P3",
+      "operations": "Conv + upsample + concat feature fusion",
+      "precision": "FP32",
+      "time_ms": 0.106562,
+      "pct": 2.04,
+      "start_index": 102,
+      "end_index": 105,
+      "layer_count": 4
+    },
+    {
+      "name": "Neck C2f at 40x40 (top-down path)",
+      "operations": "C2f: bottleneck with residual and concat fusion",
+      "precision": "FP32",
+      "time_ms": 0.127689,
+      "pct": 2.45,
+      "start_index": 106,
+      "end_index": 113,
+      "layer_count": 8
+    },
+    {
+      "name": "Neck upsample 40->80 and fuse with P2",
+      "operations": "Upsample + concat shallow and deep features",
+      "precision": "FP32",
+      "time_ms": 0.029148,
+      "pct": 0.56,
+      "start_index": 114,
+      "end_index": 115,
+      "layer_count": 2
+    },
+    {
+      "name": "Neck C2f at 80x80 (P2 fusion)",
+      "operations": "C2f: bottleneck with residual and concat fusion",
+      "precision": "FP32",
+      "time_ms": 0.232763,
+      "pct": 4.46,
+      "start_index": 116,
+      "end_index": 125,
+      "layer_count": 10
+    },
+    {
+      "name": "Head P2 classification and bbox conv prep",
+      "operations": "Parallel conv towers for cls/reg on 80x80",
+      "precision": "FP32",
+      "time_ms": 0.384818,
+      "pct": 7.38,
+      "start_index": 126,
+      "end_index": 135,
+      "layer_count": 10
+    },
+    {
+      "name": "Neck downsample 80->40 with fusion",
+      "operations": "Downsample conv + concat with 40x40 features",
+      "precision": "FP32",
+      "time_ms": 0.273349,
+      "pct": 5.24,
+      "start_index": 136,
+      "end_index": 154,
+      "layer_count": 19
+    },
+    {
+      "name": "Head P3 classification and bbox conv prep",
+      "operations": "Parallel conv towers for cls/reg on 40x40",
+      "precision": "FP32",
+      "time_ms": 0.430184,
+      "pct": 8.25,
+      "start_index": 155,
+      "end_index": 179,
+      "layer_count": 25
+    },
+    {
+      "name": "Neck downsample 40->20 with fusion",
+      "operations": "Downsample conv + concat with 20x20 features",
+      "precision": "FP32",
+      "time_ms": 0.215769,
+      "pct": 4.14,
+      "start_index": 180,
+      "end_index": 193,
+      "layer_count": 14
+    },
+    {
+      "name": "Head P4 classification and bbox conv prep",
+      "operations": "Parallel conv towers for cls/reg on 20x20",
+      "precision": "FP32",
+      "time_ms": 0.136235,
+      "pct": 2.61,
+      "start_index": 194,
+      "end_index": 203,
+      "layer_count": 10
+    },
+    {
+      "name": "Concatenate multi-scale class logits",
+      "operations": "Reshape and concat cls outputs from 3 scales",
+      "precision": "FP32",
+      "time_ms": 0.009994,
+      "pct": 0.19,
+      "start_index": 204,
+      "end_index": 207,
+      "layer_count": 4
+    },
+    {
+      "name": "DFL distance head: reshape and softmax",
+      "operations": "DFL reshape + transpose + softmax over bins",
+      "precision": "FP32",
+      "time_ms": 0.542717,
+      "pct": 10.4,
+      "start_index": 208,
+      "end_index": 213,
+      "layer_count": 6
+    },
+    {
+      "name": "Final bbox regression conv and reshape",
+      "operations": "1x1 conv on DFL outputs + reshape to distances",
+      "precision": "FP32",
+      "time_ms": 0.025157,
+      "pct": 0.48,
+      "start_index": 214,
+      "end_index": 217,
+      "layer_count": 4
+    },
+    {
+      "name": "Final box decoding with learned strides",
+      "operations": "Elementwise add/sub/div/mul to decode boxes",
+      "precision": "FP32",
+      "time_ms": 0.047228,
+      "pct": 0.91,
+      "start_index": 218,
+      "end_index": 232,
+      "layer_count": 15
+    }
+  ],
+  "source": "reasoner",
+  "architecture": "YOLOv8-style anchor-free object detector: CSP-like CNN backbone + FPN/PAN neck + transformer encoder block + decoupled heads with DFL distance regression",
+  "total_ms": 5.21639,
+  "layer_count": 233,
+  "warnings": [],
+  "fingerprint": "233:5.216:/model.0/conv/Conv:/model.23/Mul_2_output_0 copy"
+}

@@ -1,0 +1,54 @@
+# ==========================================
+# CrossGuard Edge - Git Ignore Configuration
+# ==========================================
+
+# Video & Raw Media Files (>20MB - Hosted externally per submission rules)
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.h264
+*.hevc
+
+# Credentials, Keys & Secrets (Never commit secrets)
+*.env
+*.env.*
+*.pem
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+*secret*
+*token*
+!*.plan.key
+
+# Duplicate internal project copy (preserve root as primary project repository)
+project_export/
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so.pipegen-cpu-safe
+.pytest_cache/
+.mypy_cache/
+.venv/
+env/
+venv/
+
+# Build and intermediate compiler objects
+*.o
+*.a
+*.d
+
+# OS and Editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Temporary files and logs
+*.tmp
+*.log.tmp

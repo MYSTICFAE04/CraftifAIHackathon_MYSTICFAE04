@@ -1,0 +1,830 @@
+{
+  "analysis_state": {
+    "architecture": {
+      "connections": [
+        {
+          "from": "n1",
+          "to": "n2"
+        },
+        {
+          "from": "n2",
+          "to": "n3"
+        },
+        {
+          "from": "n3",
+          "to": "n4"
+        },
+        {
+          "from": "n4",
+          "to": "n5"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "name": "Image input",
+          "short_description": "The application is described as a single-image sanity test; video-file processing is not established by the scan."
+        },
+        {
+          "id": "n2",
+          "name": "Image preprocessing",
+          "short_description": "Resize and letterbox to 640×640 with gray padding; convert to RGB float32 and scale values to [0,1]."
+        },
+        {
+          "id": "n3",
+          "name": "YOLO11s ONNX detector",
+          "short_description": "Produces raw box coordinates and 80 COCO class scores."
+        },
+        {
+          "id": "n4",
+          "name": "Detection decoder",
+          "short_description": "Transpose predictions, apply confidence filtering, and perform non-maximum suppression."
+        },
+        {
+          "id": "n5",
+          "name": "Vehicle selection and output",
+          "short_description": "The application identifies vehicle categories among detections; its description mentions a vehicle-count banner."
+        }
+      ]
+    },
+    "info": {
+      "model_paths": [
+        "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+      ],
+      "pipeline_command": "python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4",
+      "project_name": "VehicleDetection",
+      "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection"
+    },
+    "loop_count": 1,
+    "repo_url": "",
+    "tools_history": [
+      {
+        "result": "The repository contains a YOLO11s ONNX object detector trained on COCO and an application.py script described as a single-image sanity test. The script preprocesses an image by letterboxing it to 640×640, converting to RGB, and scaling pixel values to [0,1]. The model outputs raw bounding boxes and 80 class scores, which the decoder transposes, confidence-filters, and suppresses with NMS. The application identifies vehicle categories, but the scan does not establish video-file support or a DeepStream/TensorRT engine pipeline, so it cannot be confirmed to serve the requested video task as specified.",
+        "tool": "_summary"
+      },
+      {
+        "result": "[read_file]: application.py: \"\"\"Single-image sanity test for vehicle detection.\n\nNo GitHub repo or existing model file for this use case -- but unlike the\nrecent niche tasks (smoking, out-of-stock shelves, container fill level),\nvehicle detection is a standard, well-covered COCO category, so no custom\nfine-tune search was needed. Uses Ultralytics' own official YOLO11s\ncheckpoint (Ultralytics/YOLO11 on Hugging Face), COCO-pretrained (80\nclasses). Only ships .pt, so exported once with\n`YOLO(\"yolo11s.pt\").export(format=\"onnx\",",
+        "tool": "read_file"
+      }
+    ]
+  },
+  "benchmark_readme": "# PipeGen Benchmark Repository\n\nThis repository is a benchmark collection for PipeGen. It gathers multiple computer vision and perception projects that cover object detection, depth estimation, semantic segmentation, and multi-modal autonomous driving perception, alongside a set of applied retail, logistics, surveillance, and workplace-safety use cases, making it a practical workspace for evaluating pipeline generation and orchestration across varied real-world AI repositories.\n\nFor model setup, each repository may include its own helper shell script such as `download.sh` in models folder, `download_models.sh`, or a similarly named downloader. Users can run the relevant script inside the target repository to fetch the required pretrained models and supporting assets before executing the pipeline. Model weights are not committed here, so running that downloader is a required first step for most folders.\n\n## Repository Overview\n\n`AbandonedObjectDetection` flags unattended luggage in surveillance footage by tracking COCO backpack/handbag/suitcase detections from an Ultralytics YOLO11s ONNX detector with a SORT-style IOU + Hungarian tracker.  \nAn object is reported as abandoned only when it stays stationary (displacement under 20% of its own box diagonal) and no person's box is within three box-diagonals of it, continuously, for `--abandoned-seconds`.  \nWithin the PipeGen benchmark collection, it contributes a security-analytics workload that layers multi-object tracking and owner-association geometry on top of a plain detector rather than a purpose-trained class.\n\n`ANPR` is an automatic number plate recognition pipeline that chains two ONNX models: a YOLOv9-t 384x384 license-plate detector with NMS baked into the graph, then a Compact Convolutional Transformer OCR head that reads 10 character slots over a 37-symbol alphabet plus a 66-way region prediction.  \nIt is a from-scratch onnxruntime implementation rather than a wrapper around the `fast_alpr` package, and `model/download.sh` fetches both weights along with the OCR alphabet/region config the recognizer cannot run without.  \nFor PipeGen benchmarking, it adds a genuinely two-stage detect-then-recognize workload where the second model consumes crops produced by the first.\n\n`Bevfusion` is a bird's-eye-view perception repository focused on fusing camera and LiDAR information for autonomous driving workloads.  \nIt likely includes model setup, pretrained checkpoint download flows, and evaluation or demo utilities for 3D scene understanding tasks.  \nAs part of this benchmark set, it represents a large multi-modal project with heavier dependencies, richer model logic, and end-to-end perception pipelines.\n\n`CheckoutMonitoring` reports per-lane checkout status from a single image or a sequence of frames, using the same Ultralytics YOLO11s COCO person detector reused across the retail use cases in this collection.  \nEach lane in `--zone-file` carries its own cashier polygon and queue polygon, and a lane resolves to OPEN - SERVING, OPEN - IDLE, CLOSED, or UNSTAFFED - QUEUE! — the last being the state a store manager actually needs surfaced.  \nWithin the PipeGen benchmark, it contributes a multi-zone rule engine over detection output, and it expects a low `--conf-threshold` because ceiling-mounted wide-angle shots make people small.\n\n`ContainerFillLevel` estimates how full a container is from one monocular image by running Depth-Anything-V2-metric through ONNX Runtime and reading the per-row median depth profile of the frame.  \nThe largest smoothed discontinuity in that profile is taken as the fill boundary — nearer side filled, farther side empty — and fill percentage is the filled row fraction; a frame with no qualifying jump reads as effectively full.  \nFor PipeGen benchmarking, it adds a dense metric-depth workload whose output is a derived scalar rather than boxes or masks, and it is a heuristic rather than a calibrated volumetric measurement.\n\n`ConveyorBeltMonitoring` runs a YOLOv8 detector fine-tuned for conveyor lines (`abhiejit/package-conveyor-ggu-yolo2`) over four classes: bag, box, carton, and conveyor.  \nInput is `images[1,3,640,640]` RGB letterboxed to 640 with grey padding and scaled by 1/255; output `output0[1,8,8400]` is raw 4-box plus 4-class and needs the usual transpose, confidence filter, and NMS.  \nWithin the PipeGen benchmark collection, it contributes a logistics-domain detection workload driven entirely by the contract embedded in the ONNX metadata.\n\n`CustomerDwellTime` measures how long each individual shopper stays inside a zone, combining the YOLO11s person detector, a from-scratch SORT-style tracker (IOU + Hungarian matching), and a polygon zone from `--zone-file`.  \nDwell is the cumulative seconds a track's foot-point spends inside the zone, converted from frame counts using the source fps, so it needs a video or an ordered directory of frames rather than a single image.  \nFor PipeGen benchmarking, it adds a detect-track-and-clock pipeline where the answer only exists across frames, with no cross-session re-identification once a track is lost.\n\n`CustomerHeatmaps` builds a retail foot-traffic heatmap by accumulating a small Gaussian blob at each detected person's foot-point into a running 2D density map over every frame of a video.  \nThe accumulator is normalized, colorized with the JET colormap, and alpha-blended over a representative frame, so the output is a single composited image rather than per-frame annotations.  \nWithin the PipeGen benchmark collection, it contributes a spatial-accumulation workload that reduces an entire video to one aggregate visualization.\n\n`DeepLabV3-Plus-MobileNet-onnx` appears to center on semantic segmentation using a DeepLabV3+ architecture with a MobileNet backbone exported to ONNX.  \nIt is well suited for benchmarking lightweight vision inference pipelines where accuracy and deployment efficiency both matter.  \nIn this collection, it offers a focused example of image segmentation, ONNX model handling, and practical inference-oriented project structure.\n\n`EfficientNet` looks like an image classification repository built around the EfficientNet ONNX model for compact and efficient inference.  \nIt likely provides a simple application entry point, model download flow, and label mapping for running classification on input images.  \nWithin the PipeGen benchmark, it contributes a lightweight classification workload that is useful for testing straightforward model loading and prediction pipelines.\n\n`EmptyShelfDetection` locates out-of-stock gaps on retail shelves with `wiwiewei18/smart-shelf-tracker`, a single-class YOLO11n whose confidence is badly miscalibrated by its 497-image training set.  \nIt therefore runs at a deliberately very low confidence threshold and suppresses the resulting noise with two filters: drop boxes centred in the bottom `floor_frac` of the frame, and drop boxes below `min_area_frac` of the image area.  \nFor PipeGen benchmarking, it is a useful example of a detector whose usable operating point sits far from the conventional 0.25-0.5 default.\n\n`Facebook-RTDETR` appears to be an object detection repository based on the RT-DETR model family, likely adapted for ONNX inference and practical deployment.  \nIt seems suited for benchmarking transformer-style real-time detection pipelines that differ from YOLO-based architectures in both model design and runtime behavior.  \nIn this benchmark set, it adds another modern detection workload with pretrained model downloads, application-level inference, and visual output generation.\n\n`FaceMaskDetection` classifies faces as with_mask, without_mask, or mask_weared_incorrect using `spacewalk01/yolov5-face-mask-detection`, a YOLOv5s trained on the classic 853-image Kaggle mask dataset.  \nIt is the one repository here on the classic YOLOv5 head convention — `output0[1,25200,8]` with a separate objectness column, so final confidence is objectness times class score rather than class score alone.  \nThe checkpoint predates the unified `ultralytics` package and will not unpickle through it, so `model/download.sh` exports it with the original yolov5 repo's own `export.py`.\n\n`Fast-SCNN` looks like a semantic segmentation repository centered on the Fast-SCNN architecture for efficient scene parsing.  \nIt likely targets lightweight segmentation use cases where real-time or edge-friendly inference is important, especially for road scenes or general pixel-wise labeling tasks.  \nFor PipeGen benchmarking, it contributes another segmentation-focused pipeline with a simpler application flow and an emphasis on speed-oriented deployment.\n\n`LoiteringDetection` alerts on continuous presence rather than presence itself, pairing the YOLO11s person detector with a SORT-style tracker and the named polygon zones of `RestrictedAreaMonitoring`.  \nEach track carries a session clock over consecutive in-zone frames that resets the moment it leaves, so someone who walks away and comes back starts a fresh visit instead of continuing the old one; `--loiter-seconds` defaults to 30.  \nWithin the PipeGen benchmark collection, it sits between the harmless-zone dwell metric and the always-alert restricted zone, and it needs a video for a real time-threshold reading.\n\n`Mask2Former-Instance-Segmentation` appears to be an instance segmentation repository built around the Mask2Former model for mask-level scene understanding.  \nIt likely supports label-aware segmentation of individual objects, making it useful for benchmarking richer outputs than plain bounding-box detection.  \nWithin the PipeGen benchmark suite, it adds a modern transformer-based segmentation workload with model downloads, application inference, and mask generation behavior.\n\n`multi-model-perception-dashboard` is a self-contained four-model perception stack that runs YOLOv8 object detection, YOLO11 instance segmentation, 2D PAF pose estimation, and MiDaS monocular depth in parallel on a single webcam or video source, then composites the outputs into a labeled 2x2 dashboard with an FPS and per-model latency HUD.  \nInference is fanned out across a `ThreadPoolExecutor(4)` so all four ONNX models execute concurrently per frame, and the result can be displayed live, recorded to a video file, or both — with an included `smoke_test.py` that exercises the same composite path on synthetic frames headlessly.  \nWithin the PipeGen benchmark collection, it stands out as the most pipeline-orchestration-heavy entry: it stresses parallel multi-model scheduling, output fusion, and HUD compositing in a way that single-task repositories do not.\n\n`ONNX-MiDaS-Depth-Estimation` is a depth estimation repository built around the MiDaS model running through ONNX Runtime for efficient inference.  \nIt seems intended for processing images, video, or webcam streams to generate monocular depth maps, which makes it a useful example of dense prediction beyond classification or detection.  \nWithin the PipeGen benchmark, it contributes a depth-focused workload with preprocessing, model execution, and visualization steps.\n\n`ONNX-TopFormer-Semantic-Segmentation` looks like a semantic segmentation repository using the TopFormer architecture in ONNX format.  \nIt appears aimed at efficient dense scene parsing, likely with webcam or image inference paths that emphasize practical deployment and lightweight segmentation performance.  \nFor PipeGen benchmarking, it adds another segmentation pipeline with a distinct model family, ONNX runtime flow, and structured pixel-level prediction output.\n\n`onnx-Ultra-Fast-Lane-Detection-Inference` is a lane detection repository using an ONNX version of the Ultra-Fast Lane Detection model.  \nIt appears aimed at detecting road lanes from driving imagery or video, making it especially relevant for real-time transportation and ADAS-style scenarios.  \nFor PipeGen benchmarking, it adds a specialized structured-vision task with temporal or road-scene inference patterns that differ from generic detection and segmentation projects.\n\n`ONNX-Unidepth-Monocular-Metric-Depth-Estimation` appears to focus on metric monocular depth estimation using the UniDepth model in ONNX format.  \nIt likely goes beyond relative depth by targeting scale-aware predictions from a single image, making it especially relevant for applications that need more physically meaningful scene geometry.  \nFor PipeGen benchmarking, it adds another dense prediction workflow with modern ONNX deployment patterns and a different depth-estimation objective than MiDaS or stereo-based models.\n\n`ONNX-YOLOv8-Object-Detection` is an object detection project that uses YOLOv8 models exported to ONNX for streamlined deployment.  \nIt likely provides scripts for loading models, running inference on images or video, and drawing detections in a simple application-ready format.  \nFor benchmarking PipeGen, it serves as a representative detection repository with common modern CV patterns, fast inference expectations, and deployment-friendly model packaging.\n\n`Pose_Estimation` is a human pose estimation repository built around an ONNX model with keypoint and part-affinity-field decoding for multi-person skeletons.  \nIt supports running inference on images, videos, GIFs, or a live webcam stream, drawing limb connections and keypoints directly onto the output frames.  \nWithin the PipeGen benchmark collection, it adds a structured keypoint-prediction workload that differs from classification, detection, segmentation, and depth pipelines.\n\n`ppe-kit` detects personal protective equipment with `Tanishjain9/yolov8n-ppe-detection-6classes`, a YOLOv8n covering gloves, vest, goggles, helmet, mask, and safety_shoe at roughly 0.81 mAP@50.  \nInput is `images[1,3,640,640]` RGB letterboxed and scaled by 1/255; output `output0[1,10,8400]` is raw 4-box plus 6-class and needs transpose, confidence filter, and NMS.  \nFor PipeGen benchmarking, it contributes a compact edge-oriented safety-compliance detector, and its own README carries the full per-class metrics and dataset breakdown.\n\n`QueueLengthMonitoring` counts how many people stand inside a configurable queue polygon, filtering the YOLO11s COCO detector down to the person class.  \nQueue length here is the in-zone headcount that feeds an estimated-wait-time calculation; it does not infer queue order or fit a physical line shape, so a serpentine stanchion layout has to be described through `--zone-file`.  \nWithin the PipeGen benchmark collection, it is the simplest of the zone-rule retail workloads and a useful baseline against the dwell-time and checkout variants.\n\n`realsense_yolo_depth` is a live Intel RealSense + YOLOv8 fusion pipeline that grabs aligned color and Z16 depth frames from the camera, runs YOLOv8 ONNX object detection on the color image, and labels each detection box with the median metric depth sampled at its centre.  \nIt also overlays device metadata (name, serial, USB, firmware) and live accelerometer/gyroscope readings, reusing the YOLOv8 ONNX detector class from `ONNX-YOLOv8-Object-Detection` so only the depth-fusion and overlay logic are new.  \nWithin the PipeGen benchmark collection, it contributes a sensor-driven multi-modal pipeline that couples a RealSense source with neural detection and metric depth fusion, making it a good probe for orchestrating real hardware streams alongside ONNX inference.\n\n`ResNet-Image-Classification` looks like a straightforward image classification repository using a ResNet ONNX model and standard label mapping.  \nIt likely offers a compact inference entry point for classifying input images, making it a simple but useful benchmark for baseline computer vision pipelines.  \nWithin the PipeGen benchmark collection, it adds a classic classification workload that is easy to compare against lightweight or more modern architectures such as EfficientNet.\n\n`ResNet-Object-Detection` appears to be an object detection repository using a ResNet-based detection model, likely tailored for traffic or scene-specific inference.  \nIt seems well suited for benchmarking practical detection pipelines that rely on classic backbone-driven models rather than only the newest detector families.  \nFor PipeGen benchmarking, it contributes another detection example with pretrained model setup, application inference, and labeled visual outputs in a deployment-oriented structure.\n\n`RestrictedAreaMonitoring` treats any presence inside a marked danger zone as a security event, running the YOLO11s person detector, a SORT-style tracker, and a polygon membership test on every frame.  \nEach track resolves to CLEAR, IN ZONE, or INTRUSION! — the last after `--alert-frames` consecutive in-zone frames (default 2, enough to absorb a missed detection at the zone boundary) and reported with the seconds spent inside.  \nOmitting `--zone-file` makes the whole frame restricted, which suits a camera whose entire field of view is off-limits, such as a locked server room.\n\n`ShelfOccupancy` reports a continuous shelf fill percentage from `foduucom/product-detection-in-shelf-yolov8`, a two-class detector over empty and product.  \nOccupancy is the product box area divided by the combined product-plus-empty area, so it measures fill only across the shelf regions the model actually classified, not a segmentation of the whole surface.  \nThe model was trained on retail-cooler imagery and performs best on fridge and cooler shelves; its image loader is EXIF-aware because phone photos are commonly stored sideways.\n\n`SmokeDetection` runs `rabahdev/fire-smoke-yolov8n`, a YOLOv8n fine-tuned on the real-photograph D-Fire dataset over two classes, smoke and fire, with both surfaced since either is safety-critical.  \nA SORT-style tracker gives each detected region a persistent-ish ID so that `--alert-frames` consecutive detections are required before an alert fires, guarding against a single-frame false positive on a diffusing plume.  \nWithin the PipeGen benchmark collection, it contributes an environmental-hazard detection workload validated against both positive and clean-negative real imagery.\n\n`TheftDetection` uses `Nour190/shoplifting-yolo`, a YOLOv8s-Pose model with two classes, normal and shoplifting, tracked across frames with the same SORT-style IOU + Hungarian tracker used elsewhere in this collection.  \nAn alert requires `--alert-frames` consecutive shoplifting classifications on the same track, so per-frame classifier flicker does not fire it.  \nFor PipeGen benchmarking, it adds a pose-backbone behaviour classifier whose verdict is only meaningful as a run of frames rather than as a single detection.\n\n`UnsafeBehaviorDetection` detects smoking with `Enos-123/smoking-detection`, a single-class YOLO11m trained to find cigarettes.  \nInput is `images[1,3,640,640]` RGB letterboxed and scaled by 1/255; output `output0[1,5,8400]` is raw 4-box plus one class score and needs transpose, confidence filter, and NMS — every surviving detection is by definition the unsafe behaviour.  \nWithin the PipeGen benchmark collection, it contributes a small-object detection workload where the target occupies very few pixels relative to the person holding it.\n\n`VehicleDetection` runs Ultralytics' official COCO-pretrained YOLO11s through ONNX Runtime and counts the vehicle classes — bicycle, car, motorcycle, bus, train, truck, and boat.  \nEverything else in COCO-80 is still detected and drawn as a completeness check, but only the vehicle classes feed the count banner.  \nFor PipeGen benchmarking, it is the plain-detection baseline of this use-case group, sharing its `output0[1,84,8400]` decode contract with most of the retail and surveillance entries.\n\n`WorkerFallDetection` runs a YOLO11s-Pose ONNX export in the marcoslucianops DeepStream-Yolo-Pose layout, where the head output is transposed in-graph to `[1,8400,56]` — 4 box, 1 confidence, and 17 COCO keypoints of (x, y, visibility).  \nBox decode, objectness sigmoid, and keypoint pixel-space decode are all baked in by the Ultralytics Pose head at export time, so only single-class NMS is left for the application to do.  \nFalls are estimated from body orientation — a wide, short box plus a near-horizontal shoulder-to-hip line — which is a deliberately approximate single-frame heuristic, not a trained fall classifier.\n\n`yolo11n-instance-segmentation` appears to focus on instance segmentation using a compact YOLO11 segmentation model exported to ONNX.  \nIt likely supports running inference on images or video while producing both object-level detections and segmentation masks in a deployment-friendly workflow.  \nWithin the PipeGen benchmark suite, it adds a strong example of mask-based scene understanding that combines detection and segmentation in a single modern vision pipeline.\n\n`yolov8-multi-camera-input` is an object detection repository that runs a YOLOv8 ONNX model across six synchronized camera streams (front, front-left, front-right, back, back-left, back-right) in a single batched inference pass.  \nIt is well suited for autonomous-driving-style surround-view perception, where multiple video inputs must be processed together and annotated with detections in real time.  \nWithin the PipeGen benchmark collection, it contributes a multi-input batched detection workload that stresses pipeline orchestration across parallel video sources rather than a single image or video stream.\n\n`yolov8_pose_parallel` runs YOLOv8n object detection and YOLO11n-pose keypoint estimation concurrently on each frame via a `ThreadPoolExecutor(2)`, then overlays the detection boxes and the 17-keypoint COCO skeletons onto the same image with an FPS readout.  \nThe YOLOv8 wrapper reuses the `YOLOv8` class from `ONNX-YOLOv8-Object-Detection` (added to `sys.path`), while the pose head is a self-contained letterbox-and-decode port of the DeepStream `pose_render_cpu` reference, supporting webcam, video file, and headless `--output` recording paths.  \nWithin the PipeGen benchmark collection, it adds a focused two-model parallel pipeline that pairs detection with pose in a single per-frame fan-out, complementing the broader four-model `multi-model-perception-dashboard` with a smaller, more targeted concurrency example.\n",
+  "benchmark_subfolder": "VehicleDetection",
+  "chat_history": [
+    {
+      "content": "Build a real-time edge vision pipeline for CrossGuard Edge, a pedestrian and vehicle monitoring system for road crossings. Detect people, cars, buses, trucks, and motorcycles using an available pretrained object-detection model. Support a local video file as the input and a USB camera if supported. Use NVIDIA DeepStream and compile at least one model to a TensorRT engine. Display live annotated detections and generate JSON metadata or event output if supported. Complete the full PipeGen workflow and provide the TensorRT speed report. Prioritize a working, validated pipeline on my NVIDIA RTX 4060 Linux laptop. Do not invent performance measurements.",
+      "role": "user"
+    },
+    {
+      "content": "Understood: detect the requested road users from a local video file and a USB camera, display annotated results, and write JSON metadata. I’ve recorded DeepStream, TensorRT engine compilation, and the RTX 4060 target without inventing paths or performance measurements.\n\nCheck the inputs below and confirm them.",
+      "role": "assistant"
+    },
+    {
+      "content": "Inputs (2):\ninput1 · local video file · Video file · crosswalk.mp4\ninput2 · USB camera, if supported · USB camera · /dev/video0 · USB2.0 HD UVC WebCam: USB2.0 HD",
+      "role": "user"
+    },
+    {
+      "content": "Inputs confirmed: 2.\n\nOutputs taken from your description: out1 · live_display; out2 · metadata_file · url /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/output/metadata.json. Say **review outputs** to change them on a card.\n\nPlease answer these camera and target-size questions.\n\nA few questions about the scene and camera below: Continue applies what the card shows, Skip adds no step.",
+      "role": "assistant"
+    },
+    {
+      "content": "Scene and camera: Which cameras move? None of them · How big are the targets? (input1 · local video file) Small or far · How big are the targets? (input2 · USB camera, if supported) Not sure · Flag frames from a bad camera? (input2 · USB camera, if supported) off",
+      "role": "user"
+    },
+    {
+      "content": "Not added: Tiling, sliced inference (SAHI) on input1, because it runs the model several times per frame on pieces, and this build runs it once per frame.\n\nAt the camera (you): zoom in or move closer.\n\nAt the Model stage: a larger model input size helps small targets.\n\nAt the camera (you): use a mode of input2 with the picture size and frame rate its tasks need, and no more: every step after the camera then does less.\n\nDraft v1: **2 input(s)** → **object detection** → **live_display, metadata_file**. Correct it here, or press **Finalize flow**.",
+      "role": "assistant"
+    },
+    {
+      "content": "Remove input2 (USB camera / video0). Use only input1 (local video file crosswalk.mp4) -> object detection -> out1 (live_display) and out2 (metadata_file).",
+      "role": "user"
+    },
+    {
+      "content": "Removed the USB camera; the pipeline now uses only the local video file for detection, live display, and JSON metadata.\n\nDraft v2: **1 input(s)** → **object detection** → **live_display, metadata_file**. Correct it here, or press **Finalize flow**.",
+      "role": "assistant"
+    },
+    {
+      "content": "finalize the flow",
+      "role": "user"
+    },
+    {
+      "content": "Flow locked. Now the details, one task at a time: 1 of 1 to go.\n\nThe target classes, input, outputs, DeepStream requirement, TensorRT compilation, and validation device are settled. You can set a confidence threshold, or keep the default of 0.5.",
+      "role": "assistant"
+    },
+    {
+      "content": "object detection on input1 (local video file): What minimum detection confidence should be used? 0.5 confidence (0–1)",
+      "role": "user"
+    },
+    {
+      "content": "Set the minimum detection confidence to 0.5. The detection targets, input, and pipeline requirements remain unchanged.\n\nAll tasks are detailed. This is the final flow with your conditions; continue to sources, or change something.",
+      "role": "assistant"
+    },
+    {
+      "content": "continue to sources",
+      "role": "user"
+    },
+    {
+      "content": "Code for object detection on input1 (local video file): choose a local repository folder or model file, or the catalog, for each task below, or paste a path here.",
+      "role": "assistant"
+    },
+    {
+      "content": "object detection on input1 (local video file) → catalog",
+      "role": "user"
+    },
+    {
+      "content": "Catalog matches for object detection on input1 (local video file). Suggested: **A** covers all 1 task(s). Tick the ones to use, or paste a local path.",
+      "role": "assistant"
+    },
+    {
+      "content": "A",
+      "role": "user"
+    },
+    {
+      "content": "- **src1** · VehicleDetection → object detection on input1 (local video file) · `application.py` · `yolo11s.onnx` (scanned)\n\nAll 11 requirement checks pass.\n\nPress **Generate PIR** to build the pipeline graph. You can still change anything here first.",
+      "role": "assistant"
+    },
+    {
+      "content": "Modify the pipeline from a single-image sanity test to process input1 (local video file crosswalk.mp4 at 1920x1080). Use NVIDIA DeepStream with nvstreammux, YOLO11s ONNX detector for pedestrians and vehicles, nvtracker for persistent object tracking IDs across frames, live video display, and export per-frame timestamped detection metadata to output/metadata.json.",
+      "role": "user"
+    },
+    {
+      "content": "Updated the pipeline for DeepStream video detection, persistent tracking IDs, live display, and timestamped metadata export.\n\nNew task to detail: **object tracking on input1 (local video file)**.\n\nThe tracking task is settled: use nvtracker to maintain persistent IDs for pedestrians and vehicles across frames of input1.\n\nAll tasks are detailed. This is the final flow with your conditions; continue to sources, or change something.",
+      "role": "assistant"
+    },
+    {
+      "content": "continue to sources",
+      "role": "user"
+    },
+    {
+      "content": "No task needs a code repository: object tracking on input1 (local video file) computed from object detection on input1 (local video file).\n\nAll 12 requirement checks pass.\n- **src1** VehicleDetection → object detection on input1 (local video file)\n\nPress **Generate PIR** to build the pipeline graph. You can still change anything here first.",
+      "role": "assistant"
+    }
+  ],
+  "chat_name": "CrossGuard Edge Detection Pipeline",
+  "checks": {
+    "failed": 0,
+    "groups": [
+      {
+        "failed": 0,
+        "name": "Inputs",
+        "passed": 1,
+        "warned": 0
+      },
+      {
+        "failed": 0,
+        "name": "Tasks",
+        "passed": 3,
+        "warned": 0
+      },
+      {
+        "failed": 0,
+        "name": "Sources",
+        "passed": 4,
+        "warned": 0
+      },
+      {
+        "failed": 0,
+        "name": "Outputs",
+        "passed": 2,
+        "warned": 0
+      },
+      {
+        "failed": 0,
+        "name": "Handoff",
+        "passed": 2,
+        "warned": 0
+      }
+    ],
+    "passed": true,
+    "results": [
+      {
+        "fix": null,
+        "group": "Inputs",
+        "id": "input.input1",
+        "message": "input1: /home/neophiloz/Videos/CrossGuard/crosswalk.mp4 (1920x1080 · 59.94)",
+        "name": "input1 file",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Sources",
+        "id": "classes.src1.object detection@input1",
+        "message": "src1 supports pedestrians → person; vehicles → bicycle, car, motorcycle, bus, train, truck, boat for object detection@input1.",
+        "name": "object detection@input1 capabilities",
+        "status": "pass"
+      },
+      {
+        "fix": "sources",
+        "group": "Tasks",
+        "id": "tasks.covered",
+        "message": "All tasks are covered.",
+        "name": "every task has a source",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Tasks",
+        "id": "task.1.input",
+        "message": "object detection runs on input1",
+        "name": "object detection input",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Tasks",
+        "id": "task.2.input",
+        "message": "object tracking runs on input1",
+        "name": "object tracking input",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Sources",
+        "id": "source.src1.root",
+        "message": "src1: /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+        "name": "src1 folder",
+        "status": "pass"
+      },
+      {
+        "fix": "reanalyse",
+        "group": "Sources",
+        "id": "source.src1.entry",
+        "message": "src1: `python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4` → application.py",
+        "name": "src1 run command",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Sources",
+        "id": "source.src1.model.yolo11s.onnx",
+        "message": "src1: yolo11s.onnx reads fine.",
+        "name": "src1 model yolo11s.onnx",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Outputs",
+        "id": "output.out1.destination",
+        "message": "out1: live_display on this machine",
+        "name": "out1 destination",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Outputs",
+        "id": "output.out2.destination",
+        "message": "out2: metadata_file → output/metadata.json",
+        "name": "out2 destination",
+        "status": "pass"
+      },
+      {
+        "fix": "ask",
+        "group": "Handoff",
+        "id": "contract",
+        "message": "1 task(s), 1 source(s), 1 model(s).",
+        "name": "handoff contract",
+        "status": "pass"
+      },
+      {
+        "fix": null,
+        "group": "Handoff",
+        "id": "pir.readiness",
+        "message": "The PIR stage can start from the captured evidence.",
+        "name": "PIR readiness",
+        "status": "pass"
+      }
+    ],
+    "version": 2,
+    "warned": 0
+  },
+  "class_waivers": [],
+  "clone_base_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b",
+  "clone_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+  "delivered_references": {},
+  "flow_draft": {
+    "connections": [
+      {
+        "from": "input1",
+        "to": "task:object detection@input1"
+      },
+      {
+        "from": "task:object detection@input1",
+        "to": "task:object tracking@input1"
+      },
+      {
+        "from": "task:object tracking@input1",
+        "to": "out1"
+      },
+      {
+        "from": "task:object tracking@input1",
+        "to": "out2"
+      }
+    ],
+    "finalized": true,
+    "label": "Final flow · with your conditions",
+    "nodes": [
+      {
+        "id": "input1",
+        "kind": "input",
+        "name": "input1 · local video file",
+        "short_description": "video file · crosswalk.mp4 · 1920x1080"
+      },
+      {
+        "id": "task:object detection@input1",
+        "kind": "task",
+        "name": "object detection",
+        "short_description": "targets: pedestrians, vehicles · Process input1 with NVIDIA DeepStream and nvstreammux, using a YOLO11s ONNX detector for pedestrians and vehicles. Use an available pretrained model and compile at least one model to a TensorRT engine. Minimum detection confidence: 0.5. Validate the pipeline on the NVIDIA RTX 4060 Linux laptop; do not invent performance measurements. Export per-frame timestamped detection metadata."
+      },
+      {
+        "id": "task:object tracking@input1",
+        "kind": "task",
+        "name": "object tracking",
+        "short_description": "method: nvtracker (you said “nvtracker for persistent object tracking IDs across frames”) · targets: pedestrians, vehicles · Use nvtracker to maintain persistent object tracking IDs across frames."
+      },
+      {
+        "id": "out1",
+        "kind": "output",
+        "name": "out1 · live_display",
+        "short_description": "live_display"
+      },
+      {
+        "id": "out2",
+        "kind": "output",
+        "name": "out2 · metadata_file",
+        "short_description": "metadata_file · url output/metadata.json"
+      }
+    ],
+    "version": 5
+  },
+  "form_seq": 5,
+  "is_benchmark": true,
+  "mode": "benchmark",
+  "pending_form": {},
+  "pending_source": {},
+  "phase": "complete",
+  "pipeline_information": {
+    "model_paths": [
+      "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+    ],
+    "pipeline_command": "python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4",
+    "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection"
+  },
+  "pipeline_requirements": {
+    "extras": {
+      "compile": {
+        "engine": "TensorRT"
+      },
+      "device": "NVIDIA RTX 4060 Linux laptop",
+      "input_roles": {
+        "input1": "local video file"
+      },
+      "scene_step": {
+        "advice": [
+          {
+            "cue": "small_objects_wide_field",
+            "input": "input1",
+            "text": "At the camera: zoom in or move closer."
+          },
+          {
+            "cue": "small_objects_wide_field",
+            "input": "input1",
+            "text": "At the Model stage: a larger model input size helps small targets."
+          }
+        ],
+        "answered": {
+          "size__input1": "small"
+        },
+        "declined": [],
+        "inputs": {
+          "input1": {
+            "basis": {
+              "asks": [],
+              "kind": "video file",
+              "mtime": 1732487585.0,
+              "size": 24937205,
+              "tasks": [
+                "object detection@input1"
+              ],
+              "url": "/home/neophiloz/Videos/CrossGuard/crosswalk.mp4"
+            },
+            "cues": [
+              "camera_fixed",
+              "small_objects_wide_field"
+            ],
+            "duty": {
+              "colour_cast": 1.0,
+              "dock_daylight": 0.0,
+              "haze": 0.0,
+              "low_light_after_dark": 0.167
+            },
+            "evidence": [
+              "The view holds still between frames, so the camera looks fixed."
+            ],
+            "footage": {
+              "chroma_offset": 0.059,
+              "clipped_fraction": 0.002,
+              "dark_fraction": 0.22,
+              "fps": 59.94,
+              "frames": 1183,
+              "height": 1080,
+              "mean_chroma": 9.9,
+              "motion": "fixed",
+              "noise": 0.17,
+              "p50": 0.378,
+              "rms_contrast": 0.247,
+              "rules": [],
+              "samples": 12,
+              "source": "video file",
+              "suggest": [],
+              "width": 1920
+            },
+            "said": {},
+            "skipped": false
+          }
+        },
+        "ledger": [],
+        "needs": [],
+        "privacy_source": [],
+        "rules": {
+          "camera_angled": [],
+          "camera_fixed": [
+            "input1"
+          ],
+          "camera_moving": [],
+          "camera_shakes": [],
+          "motion_unknown": [],
+          "no_cloud": [],
+          "privacy": [],
+          "small_objects": [
+            "input1"
+          ],
+          "store_events_only": []
+        },
+        "version": 1
+      }
+    },
+    "inputs": [
+      {
+        "data_kind": [
+          "frames"
+        ],
+        "fps": 59.94,
+        "id": "input1",
+        "resolution": "1920x1080",
+        "role": "local video file",
+        "type": "video file",
+        "url": "/home/neophiloz/Videos/CrossGuard/crosswalk.mp4"
+      }
+    ],
+    "needs_model": null,
+    "outputs": [
+      {
+        "id": "out1",
+        "type": "live_display"
+      },
+      {
+        "id": "out2",
+        "type": "metadata_file",
+        "url": "output/metadata.json"
+      }
+    ],
+    "parallel": false,
+    "special_algorithms": [
+      {
+        "applies_to": [
+          "object detection@input1"
+        ],
+        "category": "tracking",
+        "confirmed": true,
+        "description": "Use nvtracker to maintain persistent object tracking IDs across frames.",
+        "name": "object tracking",
+        "parameters": {
+          "method": "nvtracker"
+        },
+        "reference_path": null
+      }
+    ],
+    "target_classes": [],
+    "task_kind": null,
+    "tasks": [
+      {
+        "details": "Process input1 with NVIDIA DeepStream and nvstreammux, using a YOLO11s ONNX detector for pedestrians and vehicles. Use an available pretrained model and compile at least one model to a TensorRT engine. Minimum detection confidence: 0.5. Validate the pipeline on the NVIDIA RTX 4060 Linux laptop; do not invent performance measurements. Export per-frame timestamped detection metadata.",
+        "for_input": "input1",
+        "needs_model": true,
+        "target_classes": [
+          "pedestrians",
+          "vehicles"
+        ],
+        "type": "object detection"
+      },
+      {
+        "derives_from": [
+          "object detection@input1"
+        ],
+        "details": "Use nvtracker to maintain persistent object tracking IDs across frames.",
+        "for_input": "input1",
+        "method": {
+          "catalogue": null,
+          "from": "words",
+          "name": "nvtracker",
+          "params": {},
+          "quote": "nvtracker for persistent object tracking IDs across frames"
+        },
+        "needs_model": false,
+        "target_classes": [
+          "pedestrians",
+          "vehicles"
+        ],
+        "type": "object tracking"
+      }
+    ],
+    "user_intent_summary": "Build a real-time DeepStream edge vision pipeline for CrossGuard Edge to detect people, cars, buses, trucks, and motorcycles from a local video file; display annotated detections and generate JSON metadata, compile at least one model to a TensorRT engine, and validate on an NVIDIA RTX 4060 Linux laptop without inventing performance measurements."
+  },
+  "repo_sources": [
+    {
+      "analysis_summaries": [
+        "The repository contains a YOLO11s ONNX object detector trained on COCO and an application.py script described as a single-image sanity test. The script preprocesses an image by letterboxing it to 640×640, converting to RGB, and scaling pixel values to [0,1]. The model outputs raw bounding boxes and 80 class scores, which the decoder transposes, confidence-filters, and suppresses with NMS. The application identifies vehicle categories, but the scan does not establish video-file support or a DeepStream/TensorRT engine pipeline, so it cannot be confirmed to serve the requested video task as specified.",
+        "[read_file]: application.py: \"\"\"Single-image sanity test for vehicle detection.\n\nNo GitHub repo or existing model file for this use case -- but unlike the\nrecent niche tasks (smoking, out-of-stock shelves, container fill level),\nvehicle detection is a standard, well-covered COCO category, so no custom\nfine-tune search was needed. Uses Ultralytics' own official YOLO11s\ncheckpoint (Ultralytics/YOLO11 on Hugging Face), COCO-pretrained (80\nclasses). Only ships .pt, so exported once with\n`YOLO(\"yolo11s.pt\").export(format=\"onnx\","
+      ],
+      "architecture": {
+        "connections": [
+          {
+            "from": "n1",
+            "to": "n2"
+          },
+          {
+            "from": "n2",
+            "to": "n3"
+          },
+          {
+            "from": "n3",
+            "to": "n4"
+          },
+          {
+            "from": "n4",
+            "to": "n5"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "n1",
+            "name": "Image input",
+            "short_description": "The application is described as a single-image sanity test; video-file processing is not established by the scan."
+          },
+          {
+            "id": "n2",
+            "name": "Image preprocessing",
+            "short_description": "Resize and letterbox to 640×640 with gray padding; convert to RGB float32 and scale values to [0,1]."
+          },
+          {
+            "id": "n3",
+            "name": "YOLO11s ONNX detector",
+            "short_description": "Produces raw box coordinates and 80 COCO class scores."
+          },
+          {
+            "id": "n4",
+            "name": "Detection decoder",
+            "short_description": "Transpose predictions, apply confidence filtering, and perform non-maximum suppression."
+          },
+          {
+            "id": "n5",
+            "name": "Vehicle selection and output",
+            "short_description": "The application identifies vehicle categories among detections; its description mentions a vehicle-count banner."
+          }
+        ]
+      },
+      "class_coverage": {
+        "object detection@input1": {
+          "targets": [
+            {
+              "basis": "application.py identifies the selected ONNX model as COCO-pretrained, lists person in CLASS_NAMES, and describes output0 as box coordinates plus 80 class scores, decoded with transpose, confidence filtering and NMS. The ONNX metadata names also maps class 0 to person.",
+              "kind": "labels",
+              "labels": [
+                "person"
+              ],
+              "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+              "output": "YOLO11s produces bounding-box coordinates and class scores; the decoder maps detections to the COCO person label.",
+              "requested": "pedestrians",
+              "status": "supported"
+            },
+            {
+              "basis": "application.py explicitly defines VEHICLE_CLASSES as bicycle, car, motorcycle, bus, train, truck, and boat, and describes the model output as box coordinates plus 80 class scores. The selected ONNX metadata supplies the corresponding COCO class names.",
+              "kind": "labels",
+              "labels": [
+                "bicycle",
+                "car",
+                "motorcycle",
+                "bus",
+                "train",
+                "truck",
+                "boat"
+              ],
+              "model_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx",
+              "output": "YOLO11s produces bounding-box coordinates and class scores for COCO classes; the decoder maps vehicle detections to bicycle, car, motorcycle, bus, train, truck, or boat.",
+              "requested": "vehicles",
+              "status": "supported"
+            }
+          ],
+          "version": 1
+        }
+      },
+      "class_coverage_signature": "f2469ad30795509973b3ecfc",
+      "covers_tasks": [
+        "object detection@input1"
+      ],
+      "id": "src1",
+      "label_space": {
+        "count": 80,
+        "labels": [
+          "person",
+          "bicycle",
+          "car",
+          "motorcycle",
+          "airplane",
+          "bus",
+          "train",
+          "truck",
+          "boat",
+          "traffic light",
+          "fire hydrant",
+          "stop sign",
+          "parking meter",
+          "bench",
+          "bird",
+          "cat",
+          "dog",
+          "horse",
+          "sheep",
+          "cow",
+          "elephant",
+          "bear",
+          "zebra",
+          "giraffe",
+          "backpack",
+          "umbrella",
+          "handbag",
+          "tie",
+          "suitcase",
+          "frisbee",
+          "skis",
+          "snowboard",
+          "sports ball",
+          "kite",
+          "baseball bat",
+          "baseball glove",
+          "skateboard",
+          "surfboard",
+          "tennis racket",
+          "bottle",
+          "wine glass",
+          "cup",
+          "fork",
+          "knife",
+          "spoon",
+          "bowl",
+          "banana",
+          "apple",
+          "sandwich",
+          "orange",
+          "broccoli",
+          "carrot",
+          "hot dog",
+          "pizza",
+          "donut",
+          "cake",
+          "chair",
+          "couch",
+          "potted plant",
+          "bed",
+          "dining table",
+          "toilet",
+          "tv",
+          "laptop",
+          "mouse",
+          "remote",
+          "keyboard",
+          "cell phone",
+          "microwave",
+          "oven",
+          "toaster",
+          "sink",
+          "refrigerator",
+          "book",
+          "clock",
+          "vase",
+          "scissors",
+          "teddy bear",
+          "hair drier",
+          "toothbrush"
+        ],
+        "source": "model/yolo11s.onnx metadata 'names'; application.py",
+        "version": 3
+      },
+      "model_paths": [
+        "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+      ],
+      "model_roles": [],
+      "pipeline_command": "python application.py /home/neophiloz/Videos/CrossGuard/crosswalk.mp4",
+      "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+      "scan_hash": "96bf00788222c74cc7b64b26340a8d6b2543ebdda93ca742a5d058b527d1d3f7",
+      "source": "benchmark",
+      "subfolder": "VehicleDetection",
+      "unused_models": []
+    }
+  ],
+  "req_stage": "complete",
+  "requirement_profile": {
+    "clarify": {},
+    "code": [],
+    "inputs": {
+      "input1": {},
+      "input2": {}
+    },
+    "outputs": {
+      "out1": {},
+      "out2": {}
+    },
+    "tasks": {
+      "object detection@input1": {
+        "confidence_threshold": {
+          "label": "What minimum detection confidence should be used?",
+          "value": 0.5
+        }
+      }
+    }
+  },
+  "scan_hits": [
+    {
+      "analysis_cached": false,
+      "cache_hit": false,
+      "hash": "96bf00788222c74cc7b64b26340a8d6b2543ebdda93ca742a5d058b527d1d3f7",
+      "source": "src1"
+    }
+  ],
+  "source_strategy": "separate",
+  "task_checklist": {
+    "active": null,
+    "items": [
+      {
+        "id": 1,
+        "indices": [
+          0
+        ],
+        "keys": [
+          "object detection@input1"
+        ],
+        "label": "object detection on input1 (local video file)",
+        "round": 1,
+        "status": "done",
+        "summary": "Detect people, cars, buses, trucks, and motorcycles in input1 with a minimum confidence of 0.5."
+      },
+      {
+        "id": 2,
+        "indices": [
+          1
+        ],
+        "keys": [
+          "object tracking@input1"
+        ],
+        "label": "object tracking on input1 (local video file)",
+        "round": 0,
+        "status": "done",
+        "summary": "Track pedestrians and vehicles across frames of the local video using nvtracker."
+      }
+    ],
+    "version": 4
+  },
+  "typed_on_cards": {
+    "10": [],
+    "14": [],
+    "2": [
+      "/home/neophiloz/Videos/CrossGuard/crosswalk.mp4"
+    ],
+    "4": []
+  },
+  "understanding": {
+    "answered": {},
+    "asked": [
+      "What minimum detection confidence should be used?"
+    ],
+    "defaulted": {
+      "inputs": {},
+      "outputs": {}
+    },
+    "deferred": [],
+    "input_count": 2,
+    "input_fields": [],
+    "notes": [
+      "turn 1: Recorded two described inputs; paths and camera device details are left for the host’s input card rather than guessed.",
+      "turn 1: USB camera support is conditional in the request; recorded it as an input without claiming compatibility.",
+      "turn 1: Grouped the requested road-user categories into one model-based detection task.",
+      "turn 1: Selected a metadata file output for the requested JSON metadata; its destination is left to the host.",
+      "turn 1: Recorded TensorRT engine compilation without assuming a precision, and did not supply performance measurements."
+    ],
+    "output_fields": [],
+    "question_turns": 0,
+    "taken": [
+      "outputs"
+    ]
+  }
+}

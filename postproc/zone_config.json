@@ -1,0 +1,18 @@
+{
+  "camera_id": "cam_crosswalk_01",
+  "conflict_zone_polygon": [
+    [400, 500],
+    [1520, 500],
+    [1700, 980],
+    [220, 980]
+  ],
+  "normalized_coordinates": false,
+  "frame_width": 1920,
+  "frame_height": 1080,
+  "pedestrian_labels": ["person", "pedestrian"],
+  "vehicle_labels": ["car", "truck", "bus", "motorcycle", "bicycle", "vehicle"],
+  "min_confidence": 0.40,
+  "sustained_frames_threshold": 3,
+  "cooldown_seconds": 3.0,
+  "bbox_anchor": "bottom_center"
+}

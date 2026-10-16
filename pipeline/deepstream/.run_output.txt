@@ -1,0 +1,44 @@
+[run.vms.sh] video tcp://0.0.0.0:7010  metadata tcp://0.0.0.0:7002
+[run.sh] JSON -> /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/output/metadata.json
+make: Entering directory '/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/parsers'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/parsers'
+Setting pipeline to PAUSED ...
+gstnvtracker: Loading low-level lib at /opt/nvidia/deepstream/deepstream/lib/libnvds_nvmultiobjecttracker.so
+[NvMultiObjectTracker] Initialized
+0:00:00.314334755 [34m 1707[00m 0x55e01b567cc0 [36mINFO   [00m [00m    nvinfer_backport gstnvinfer.cpp:684:gst_nvinfer_backport_logger:<nvinferbackport0>[00m NvDsInferContext[UID 1]: Info from NvDsInferContextImpl::deserializeEngineAndBackend() <nvdsinfer_context_impl.cpp:2161> [UID = 1]: deserialized trt engine from :/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/model_stage/yolo11s.fp32.plan
+0:00:00.314372156 [34m 1707[00m 0x55e01b567cc0 [36mINFO   [00m [00m    nvinfer_backport gstnvinfer.cpp:684:gst_nvinfer_backport_logger:<nvinferbackport0>[00m NvDsInferContext[UID 1]: Info from NvDsInferContextImpl::generateBackendContext() <nvdsinfer_context_impl.cpp:2264> [UID = 1]: Use deserialized engine model: /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/model_stage/yolo11s.fp32.plan
+0:00:00.331090220 [34m 1707[00m 0x55e01b567cc0 [36mINFO   [00m [00m    nvinfer_backport gstnvinfer_impl.cpp:343:notifyLoadModelStatus:<nvinferbackport0>[00m [UID 1]: Load new model:/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/configs/config_det_pgie.txt sucessfully
+Implicit layer support has been deprecated
+INFO: [Implicit Engine Info]: layers num: 0
+
+Pipeline is live and does not need PREROLL ...
+Pipeline is PREROLLED ...
+Setting pipeline to PLAYING ...
+New clock: GstSystemClock
+Failed to query video capabilities: Invalid argument
+Redistribute latency...
+[YOLO11s-det] first call: layer=output0 numDims=2 networkInput=640x640 numClasses=80 outputs=1
+[meta_json] file -> /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/output/metadata.json
+[event-sink] metadata on tcp://:7002
+[vms-events] -> /home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/pipeline/deepstream/store/events/cam<N>.jsonl  (min_conf=0.30 interval=5 skip_empty=1)
+Redistribute latency...
+Redistribute latency...
+[event-sink] console connected (1)
+[vms-events]    159 frames      31 events      337 objects   15.5 ev/s  1 camera(s)
+[vms-events]    279 frames      55 events      676 objects   12.0 ev/s  1 camera(s)
+[vms-events]    399 frames      79 events     1029 objects   12.0 ev/s  1 camera(s)
+[vms-events]    519 frames     103 events     1328 objects   12.0 ev/s  1 camera(s)
+[vms-events]    639 frames     127 events     1646 objects   12.0 ev/s  1 camera(s)
+[vms-events]    759 frames     151 events     1915 objects   12.0 ev/s  1 camera(s)
+[vms-events]    879 frames     175 events     2228 objects   12.0 ev/s  1 camera(s)
+[vms-events]    999 frames     199 events     2469 objects   12.0 ev/s  1 camera(s)
+[vms-events]   1119 frames     223 events     2724 objects   12.0 ev/s  1 camera(s)
+nvstreammux: Successfully handled EOS for source_id=0
+Got EOS from element "pipeline0".
+EOS received - stopping pipeline...
+Execution ended after 0:00:19.737419194
+Setting pipeline to NULL ...
+Freeing pipeline ...
+[NvMultiObjectTracker] De-initialized
+[meta_json] 1183 frames, 14490 objects

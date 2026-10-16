@@ -1,0 +1,1 @@
+"{\n    \"root\": \"/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection\",\n    \"tree\": {\n        \"model\": {\n            \"download.sh\": \"model/download.sh\",\n            \"yolo11s.onnx\": \"model/yolo11s.onnx\"\n        },\n        \"application.py\": \"application.py\"\n    }\n}"

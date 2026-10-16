@@ -1,0 +1,15 @@
+{
+  "versions": [
+    {
+      "version": 1,
+      "file": "UserInfo_v1.json",
+      "archived_at": "2026-10-16T16:52:04",
+      "reason": "requirements reopened",
+      "dropped": [],
+      "project_path": "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection",
+      "model_paths": [
+        "/home/neophiloz/.pipegen/kumareshvsbeee/4c420caa-d00a-4869-9a37-8fb2c705db9b/src1/VehicleDetection/model/yolo11s.onnx"
+      ]
+    }
+  ]
+}
